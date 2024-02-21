@@ -1,0 +1,53 @@
+// specify the language version
+syntax = "proto3";
+
+// this specifies the Go package where the generated code will be placed
+// tells the protocol buffer compiler (protoc) to generate Go code
+// and place it in the package when generating Go code from this .proto file
+// note the subdirectory
+option go_package = "github.com/bazmurphy/grpc-with-go/invoicer";
+
+message Amount {
+  int64 amount = 1;
+  string currency = 2;
+}
+
+// create our first message type
+message CreateRequest {
+  // we put the fields we can have in our message
+  // what will be in our input
+  // we make an amount, give it a type and define its position in the message
+  // int64 amount = 1; 
+  // and a curency (string) in position 2
+  // string currency = 2;
+
+  // but we can abstract this away into another message "Amount" for re-usability
+  // and then use that message here instead
+  // we use the message TYPE "Amount" and name it "amount" and set it at position 1
+  Amount amount = 1;
+
+  // who the invoice was received from
+  string from = 2;
+
+  // who the invoice will be sent to
+  string to = 3;
+
+  // now we can make another field
+  string VATNumber = 4;
+}
+
+message CreateResponse {
+  // and what will be in our output
+  // we return an invoice as pdf (type bytes) (return binary data - sequence of bytes - binary representation of the pdf)
+  bytes pdf = 1;
+  // invoice as a doc file
+  bytes docx = 2;
+}
+
+service Invoicer {
+  // [1] the name of the method
+  // [2] inside the 1st parenthesis specify the request message
+  // [3] returns keyword
+  // [4] specify the response message
+  rpc Create(CreateRequest) returns (CreateResponse);
+}
